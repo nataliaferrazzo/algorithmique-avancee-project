@@ -1,0 +1,4 @@
+Compte Rendu projet Algorithimique avancee:
+
+Question 1.1:
+Our first idea to get the end of a word was to take the first element of the ascii table which is null. But actually after trying to convert the text to a new format with the separation with space we saw that the good element to take was '\n'.
