@@ -101,3 +101,56 @@ bool searchPatricia(PatriciaNode *root, const char *word) {
 
     return current->isEndOfWord;
 }
+
+int countWords(PatriciaNode *tree){
+    if (tree == NULL) {
+        return 0;
+    }
+    int res = 0;
+    if (tree->isEndOfWord){
+            res++;
+    }
+    if (tree->children != NULL) {
+        for (int i = 0; i < tree->childrenCount; i++) { // Assuming children is NULL-terminated
+            res += countWords(tree->children[i]);
+        }
+    }
+    return res; 
+}
+
+
+//not work yet
+int hauteur(PatriciaNode *tree){
+    if (tree == NULL) {
+        return -1;
+    }
+    printf("%s\n", tree->label);
+    int res = 0;
+    if (tree->children != NULL){
+        res++;
+        for (int i = 0; i < tree->childrenCount; i++) { 
+            int tmp = hauteur(tree->children[i]);
+            if(tmp >= res){
+                res += tmp;
+                printf("update res : %d\n", res);
+            }
+        }
+    }
+    
+    
+    return res;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

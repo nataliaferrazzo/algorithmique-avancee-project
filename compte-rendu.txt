@@ -1,4 +1,32 @@
 Compte Rendu projet Algorithimique avancee:
 
+Introduction:
+We chose to develop our project by programming with C language because it's one of the two languages (with ocaml) that we already used for previous project which needed to create our own structures.
+Futhermore the use of pointers fits very well with the need to rely each node or tree to their children. The first issue we thought about after choosing this language is that we will have to handle the memory directly in the code which can add some difficulties.   
+The version of the compiler i am using is : gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1)
+
 Question 1.1:
 Our first idea to get the end of a word was to take the first element of the ascii table which is null. But actually after trying to convert the text to a new format with the separation with space we saw that the good element to take was '\n'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

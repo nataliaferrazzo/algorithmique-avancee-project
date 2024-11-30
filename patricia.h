@@ -15,5 +15,7 @@ typedef struct PatriciaNode {
 PatriciaNode* createPatriciaNode(const char *label);
 void insertPatricia(PatriciaNode *root, const char *word);
 bool searchPatricia(PatriciaNode *root, const char *word);
+int countWords(PatriciaNode *root);
+int hauteur(PatriciaNode *tree);
 
 #endif // PATRICIA_H

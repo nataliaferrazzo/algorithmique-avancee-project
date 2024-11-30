@@ -4,8 +4,10 @@
 #include <ctype.h>
 #include "patricia.h"
 
+
+
 // Function to insert words and punctuation into the Patricia Trie
-void buildPatriciaFromPhrase(PatriciaNode *root, const char *phrase) {
+PatriciaNode* buildPatriciaFromPhrase(PatriciaNode *root, const char *phrase) {
     char buffer[256];
     int pos = 0;
 
@@ -33,6 +35,7 @@ void buildPatriciaFromPhrase(PatriciaNode *root, const char *phrase) {
         buffer[pos] = '\0';
         insertPatricia(root, buffer);
     }
+    return root;
 }
 
 int main() {
@@ -43,15 +46,19 @@ int main() {
     PatriciaNode *patriciaRoot = createPatriciaNode("");
 
     // Build the Patricia Trie from the phrase
-    buildPatriciaFromPhrase(patriciaRoot, phrase);
-
+    PatriciaNode * pat = buildPatriciaFromPhrase(patriciaRoot, phrase);
     printf("Patricia Trie successfully built from the given phrase.\n");
 
+    int res = countWords(pat);
+    printf("nb of words in patricia tree of the exemple : %d\n should be 37\n", res);
+    printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // do not work properly, should be 3 and give 5.
+    
+
     // Test searching for words and punctuation
-    const char *testTokens[] = {"dactylographie", "A", "phrase", ",", "ci", "dessous,", "?", "inexistent"};
+    /*const char *testTokens[] = {"dactylographie", "A", "phrase", ",", "ci", "dessous,", "?", "inexistent"};
     for (int i = 0; i < 8; i++) {
         printf("Search for '%s': %s\n", testTokens[i], searchPatricia(patriciaRoot, testTokens[i]) ? "Found" : "Not Found");
-    }
+    }*/
 
     return 0;
 }
