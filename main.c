@@ -51,6 +51,12 @@ int main() {
 
     int res = countWords(pat);
     printf("nb of words in patricia tree of the exemple : %d\n should be 37\n", res);
+
+    char** list = ListeMots(pat);
+    for(int i = 0; i < res; i++ ){
+        printf("%s\n", list[i]);
+    }
+
     printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // do not work properly, should be 3 and give 5.
     
 

@@ -118,13 +118,63 @@ int countWords(PatriciaNode *tree){
     return res; 
 }
 
+void sortChildren(PatriciaNode **children, int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = i + 1; j < count; j++) {
+            if (strcmp(children[i]->label, children[j]->label) > 0) {
+                PatriciaNode *temp = children[i];
+                children[i] = children[j];
+                children[j] = temp;
+            }
+        }
+    }
+}
+
+void collectWords(PatriciaNode *tree, char *currentWord, char ***result, int *count) {
+    if (tree == NULL) return;
+
+    int len1 = strlen(currentWord);
+    int len2 = strlen(tree->label);
+    char *newWord = malloc(len1 + len2 + 1); // +1 pour '\0'
+    strcpy(newWord, currentWord);
+    strcat(newWord, tree->label);
+    
+
+    // Si c’est la fin d’un mot, ajouter à la liste des résultats
+    if (tree->isEndOfWord) {
+        *result = realloc(*result, (*count + 1) * sizeof(char *));
+        (*result)[*count] = strdup(newWord);
+        (*count)++;
+    }
+
+    sortChildren(tree->children, tree->childrenCount);
+
+    for (int i = 0; i < tree->childrenCount; i++) {
+        collectWords(tree->children[i], newWord, result, count);
+    }
+    free(newWord);
+}
+
+char ** ListeMots(PatriciaNode *tree){
+    if (tree == NULL) {
+        return NULL;
+    }
+    
+    char **list = NULL;
+    int count = 0;
+    
+    collectWords(tree, "", &list, &count);
+
+    return list;
+}
+
 
 //not work yet
 int hauteur(PatriciaNode *tree){
     if (tree == NULL) {
         return -1;
     }
-    printf("%s\n", tree->label);
+    //printf("%s\n", tree->label);
     int res = 0;
     if (tree->children != NULL){
         res++;
@@ -132,7 +182,7 @@ int hauteur(PatriciaNode *tree){
             int tmp = hauteur(tree->children[i]);
             if(tmp >= res){
                 res += tmp;
-                printf("update res : %d\n", res);
+                //printf("update res : %d\n", res);
             }
         }
     }
@@ -140,9 +190,6 @@ int hauteur(PatriciaNode *tree){
     
     return res;
 }
-
-
-
 
 
 
