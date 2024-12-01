@@ -18,5 +18,8 @@ bool searchPatricia(PatriciaNode *root, const char *word);
 int countWords(PatriciaNode *root);
 int hauteur(PatriciaNode *tree);
 char ** ListeMots(PatriciaNode *tree);
+int ComptageNil(PatriciaNode *tree);
+int ProfondeurMoyenne(PatriciaNode *tree);
+int Prefixe(PatriciaNode *tree, char* word);
 
 #endif // PATRICIA_H

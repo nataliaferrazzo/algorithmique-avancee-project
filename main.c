@@ -58,7 +58,9 @@ int main() {
     }
 
     printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // do not work properly, should be 3 and give 5.
-    
+    printf("nb of pointer to null  : %d\n\n", ComptageNil(pat));
+    printf("prof moyenne : %d\n", ProfondeurMoyenne(pat));
+    Prefixe(pat, "genial"); // still have to do a print to be sure, but seems to work
 
     // Test searching for words and punctuation
     /*const char *testTokens[] = {"dactylographie", "A", "phrase", ",", "ci", "dessous,", "?", "inexistent"};

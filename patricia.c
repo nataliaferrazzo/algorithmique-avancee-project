@@ -135,12 +135,12 @@ void collectWords(PatriciaNode *tree, char *currentWord, char ***result, int *co
 
     int len1 = strlen(currentWord);
     int len2 = strlen(tree->label);
-    char *newWord = malloc(len1 + len2 + 1); // +1 pour '\0'
+    char *newWord = malloc(len1 + len2 + 1); // +1 for '\0'
     strcpy(newWord, currentWord);
     strcat(newWord, tree->label);
     
 
-    // Si c’est la fin d’un mot, ajouter à la liste des résultats
+    // if it's the end of a word add to the result list
     if (tree->isEndOfWord) {
         *result = realloc(*result, (*count + 1) * sizeof(char *));
         (*result)[*count] = strdup(newWord);
@@ -168,22 +168,19 @@ char ** ListeMots(PatriciaNode *tree){
     return list;
 }
 
+//Count the number of pointer to null
+int ComptageNil(PatriciaNode *tree){
 
-//not work yet
-int hauteur(PatriciaNode *tree){
     if (tree == NULL) {
-        return -1;
+        return 1;
     }
-    //printf("%s\n", tree->label);
+
     int res = 0;
-    if (tree->children != NULL){
-        res++;
+    if (tree->children == NULL){
+        return 1;
+    }else{
         for (int i = 0; i < tree->childrenCount; i++) { 
-            int tmp = hauteur(tree->children[i]);
-            if(tmp >= res){
-                res += tmp;
-                //printf("update res : %d\n", res);
-            }
+            res += ComptageNil(tree->children[i]);
         }
     }
     
@@ -191,9 +188,84 @@ int hauteur(PatriciaNode *tree){
     return res;
 }
 
+int hauteur(PatriciaNode *tree){
+    printf("label: %s\n", tree->label);
+    if (tree == NULL) {
+        return -1;
+    }
+    int res = -1; // why is it better to start from -1?
+    
+    for (int i = 0; i < tree->childrenCount; i++) { 
+        int tmp = hauteur(tree->children[i]);
+        if(tmp > res){
+            res = tmp;
+        }        
+    }
+       
+    return res + 1;
+}
+
+void calculerProfondeur(PatriciaNode *tree, int profondeurActuelle, int *sommeProfondeurs, int *nbFeuilles) {
+    if (tree == NULL) return;
+
+    if (tree->childrenCount == 0) {
+        (*sommeProfondeurs) += profondeurActuelle;
+        (*nbFeuilles)++;
+        return;
+    }
+
+    for (int i = 0; i < tree->childrenCount; i++) {
+        calculerProfondeur(tree->children[i], profondeurActuelle + 1, sommeProfondeurs, nbFeuilles);
+    }
+}
+
+int ProfondeurMoyenne(PatriciaNode *tree) {
+    if (tree == NULL) return 0;
+
+    int sommeProfondeurs = 0;
+    int nbFeuilles = 0;
+
+    calculerProfondeur(tree, 0, &sommeProfondeurs, &nbFeuilles);
+
+    // Calculer la moyenne
+    if (nbFeuilles == 0) return 0; // to avoid to divide by zero
+    return sommeProfondeurs / nbFeuilles;
+}
 
 
+PatriciaNode *rechercherPrefixe(PatriciaNode *node, const char *mot) {
+    if (node == NULL || mot[0] == '\0') return node;
 
+    
+    for (int i = 0; i < node->childrenCount; i++) {
+        PatriciaNode *child = node->children[i];
+        if (strncmp(child->label, mot, strlen(child->label)) == 0) {
+            
+            return rechercherPrefixe(child, mot + strlen(child->label));
+        }
+    }
+    return NULL;
+}
+
+int compterMots(PatriciaNode *node) {
+    if (node == NULL) return 0;
+
+    int count = 0;
+    if (node->isEndOfWord) count++;
+
+    for (int i = 0; i < node->childrenCount; i++) {
+        count += compterMots(node->children[i]);
+    }
+
+    return count;
+}
+int Prefixe(PatriciaNode *tree, char* word){
+    PatriciaNode *node = rechercherPrefixe(tree, word);
+
+    if (tree == NULL) return 0;
+
+    return compterMots(node);
+}
 
 
 
