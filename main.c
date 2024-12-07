@@ -52,16 +52,23 @@ int main() {
     int res = countWords(pat);
     printf("nb of words in patricia tree of the exemple : %d\n should be 37\n", res);
 
-    char** list = ListeMots(pat);
-    for(int i = 0; i < res; i++ ){
-        printf("%s\n", list[i]);
-    }
+    // char** list = ListeMots(pat);
+    // for(int i = 0; i < res; i++ ){
+    //     printf("%s\n", list[i]);
+    // }
 
-    printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // do not work properly, should be 3 and give 5.
+    printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // good result?.
     printf("nb of pointer to null  : %d\n\n", ComptageNil(pat));
     printf("prof moyenne : %d\n", ProfondeurMoyenne(pat));
-    Prefixe(pat, "genial"); // still have to do a print to be sure, but seems to work
-
+    printf("nb de mot dans l'arbre ayant pour prefixe dactylo: %d\n",Prefixe(pat, "dactylo")); 
+    printf("Search for clavier: %s\n", searchPatricia(pat, "clavier") ? "Found" : "Not Found");
+    
+    //Suppression works but so doesn't take into account isEndOfWord
+    PatriciaNode* pat2 =Suppression(pat, "dactylo");
+    char** list2 = ListeMots(pat2);
+    for(int i = 0; i < res-1; i++ ){
+        printf("%s\n", list2[i]);
+    }
     // Test searching for words and punctuation
     /*const char *testTokens[] = {"dactylographie", "A", "phrase", ",", "ci", "dessous,", "?", "inexistent"};
     for (int i = 0; i < 8; i++) {

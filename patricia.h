@@ -21,5 +21,6 @@ char ** ListeMots(PatriciaNode *tree);
 int ComptageNil(PatriciaNode *tree);
 int ProfondeurMoyenne(PatriciaNode *tree);
 int Prefixe(PatriciaNode *tree, char* word);
+PatriciaNode *Suppression(PatriciaNode *tree, const char *word);
 
 #endif // PATRICIA_H
