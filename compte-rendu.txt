@@ -8,9 +8,14 @@ The version of the compiler i am using is : gcc version 6.3.0 20170516 (Debian 6
 Question 1.1:
 Our first idea to get the end of a word was to take the first element of the ascii table which is null. But actually after trying to convert the text to a new format with the separation with space we saw that the good element to take was '\n'.
 
+Question 3.7:
+To merge two Patricia trees the main steps are:
+    1- Count the number of words in one of the tree
+    2- Create a list of char* of this size 
+    3- Put all the words of one tree in a list
+    4- Insert one by one the words of the list in the other Patricia tree.
 
-
-
+There is maybe a better way to do it by comparing directly the prefixes but the implementations would be harder, as we already the fonctions to do the described method.
 
 
 
