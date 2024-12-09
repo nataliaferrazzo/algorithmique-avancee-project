@@ -39,7 +39,6 @@ void insertPatricia(PatriciaNode *root, const char *word) {
             if (matchLen > 0) {
                 if (matchLen == strlen(child->label)) {
                     word += matchLen;
-                    printf("label : %s\tword : %s\n", child->label, word);
                     current = child;
                     found = true;
                     break;
@@ -53,112 +52,28 @@ void insertPatricia(PatriciaNode *root, const char *word) {
                     child->children = (PatriciaNode **)malloc(sizeof(PatriciaNode *) * 2);
                     child->children[0] = newChild;
                     child->childrenCount = 1;
-                    // if(matchLen == strlen(word)){
-                    //     child->isEndOfWord = true;
-                    // }else{
-                    //     child->isEndOfWord = false;
-                    //     PatriciaNode *newWordNode = createPatriciaNode(word + matchLen);
-                    //     newWordNode->isEndOfWord = true;
-
-                    //     child->children = (PatriciaNode **)realloc(child->children, sizeof(PatriciaNode *) * 2);
-                    //     child->children[1] = newWordNode;
-                    //     child->childrenCount++;
-                    // }
-                    child->isEndOfWord = false;
                     
-                    PatriciaNode *newWordNode = createPatriciaNode(word + matchLen);
-                    newWordNode->isEndOfWord = true;
-
-                    child->children = (PatriciaNode **)realloc(child->children, sizeof(PatriciaNode *) * 2);
-                    child->children[1] = newWordNode;
-                    child->childrenCount++;
-                    return; 
-                }
-            }
-        }
-
-        if (!found) {
-            PatriciaNode *newNode = createPatriciaNode(word);
-            newNode->isEndOfWord = true;
-
-            current->children = (PatriciaNode **)realloc(current->children, sizeof(PatriciaNode *) * (current->childrenCount + 1));
-            current->children[current->childrenCount++] = newNode;
-            return;
-        }
-    }
-
-    current->isEndOfWord = true;
-}
-
-// Insert a word into the Patricia-Trie
-void insertPatricia2(PatriciaNode *root, const char *word) {
-    PatriciaNode *current = root;
-    
-    while (*word) {
-        printf("\nword inserting: %s\n", word);
-        bool found = false;
-        for (int i = 0; i < current->childrenCount; i++) {
-            PatriciaNode *child = current->children[i];
-            int matchLen = 0;
-            while(word[matchLen] == child->label[matchLen]){
-                matchLen++;
-            }
-
-            if (matchLen > 0) {
-                if (matchLen == strlen(child->label)) {
-                    if (strlen(word) == matchLen && strncmp(word, child->label, matchLen) == 0){
-                        printf("label : %s\n", child->label);
-                        printf("already there\n");
+                    if(matchLen == strlen(word)){
+                        child->isEndOfWord = true;
                         return;
-                        
-                    }else{
-                        word += matchLen;
-                        current = child;
-                        printf("should continue just with the suffixe of newWord\n");
-                        break;
+                    }
+                    else{
+                        child->isEndOfWord = false;
+                        PatriciaNode *newWordNode = createPatriciaNode(word + matchLen);
+                        newWordNode->isEndOfWord = true;
+
+                        child->children = (PatriciaNode **)realloc(child->children, sizeof(PatriciaNode *) * 2);
+                        child->children[1] = newWordNode;
+                        child->childrenCount++;
+                        return; 
                     }
                     
-                } else
-                if(matchLen == strlen(word)) {
-                    //create a node with the suffixe of the old word
-                    printf("should create a new node with suffixe of oldWord\n");
-                    PatriciaNode *newChild = createPatriciaNode(child->label + matchLen);
-                    newChild->children = child->children;
-                    newChild->childrenCount = child->childrenCount;
-                    newChild->isEndOfWord = child->isEndOfWord;
-
-                    child->children = (PatriciaNode **)realloc(child->children, sizeof(PatriciaNode *) * 2);
-                    child->children[0] = newChild;
-                    child->childrenCount = 1;
-                    child->isEndOfWord = true;
-                    return;
                     
-                }else{
-                    printf("should create two children\n");
-                    PatriciaNode *newChild = createPatriciaNode(child->label + matchLen);
-                    newChild->children = child->children;
-                    newChild->childrenCount = child->childrenCount;
-                    newChild->isEndOfWord = child->isEndOfWord;
-
-                    child->label[matchLen] = '\0';
-                    child->children = (PatriciaNode **)malloc(sizeof(PatriciaNode *) * 2);
-                    child->children[0] = newChild;
-                    child->childrenCount = 1;
-                    child->isEndOfWord = false;
-                    
-                    PatriciaNode *newWordNode = createPatriciaNode(word + matchLen);
-                    newWordNode->isEndOfWord = true;
-
-                    child->children = (PatriciaNode **)realloc(child->children, sizeof(PatriciaNode *) * 2);
-                    child->children[1] = newWordNode;
-                    child->childrenCount++;
-                    return;
                 }
             }
-            
         }
+
         if (!found) {
-            printf("not found so new node\n");
             PatriciaNode *newNode = createPatriciaNode(word);
             newNode->isEndOfWord = true;
 
@@ -167,49 +82,40 @@ void insertPatricia2(PatriciaNode *root, const char *word) {
             return;
         }
     }
-    //current->isEndOfWord = true;
-}
 
+    //current->isEndOfWord = false;
+}
 
 // Search for a word in the Patricia-Trie
 bool searchPatricia(PatriciaNode *root, const char *word) {
     PatriciaNode *current = root;
 
-    // while (*word) {
-    //     bool found = false;
+    while (*word) {
+        bool found = false;
 
         for (int i = 0; i < current->childrenCount; i++) {
-            PatriciaNode *child = current->children[i];
-            if(child->label[0] == word[0]){
-                if(strcmp(child->label, word)){
-                    return child->isEndOfWord;
-                }else{
-                    return searchPatricia(child, word + strlen(child->label));
-                }
+            PatriciaNode *child = current->children[i];            
+            int matchLen = 0;
+
+            while (word[matchLen] && child->label[matchLen] && word[matchLen] == child->label[matchLen]) {
+                matchLen++;
             }
-            
-    //         int matchLen = 0;
 
-    //         while (word[matchLen] && child->label[matchLen] && word[matchLen] == child->label[matchLen]) {
-    //             matchLen++;
-    //         }
-
-    //         if (matchLen == strlen(child->label)) {
-    //             word += matchLen;
-    //             current = child;
-    //             found = true;
-    //             break;
-    //         }
-    //     }
-
-    //     if (!found) {
-    //         return false;
-    //     }
-    // }
-
-    // return current->isEndOfWord;
+            if (matchLen == strlen(child->label)) {
+                word += matchLen;
+                current = child;
+                found = true;
+                break;
+            }
         }
-        return false;
+
+        if (!found) {
+            return false;
+        }
+    }
+
+    return current->isEndOfWord;
+        
 }
 
 int countWords(PatriciaNode *tree){
@@ -252,7 +158,7 @@ void collectWords(PatriciaNode *tree, char *currentWord, char ***result, int *co
 
     // if it's the end of a word add to the result list
     if (tree->isEndOfWord) {
-        //printf("label : %s\t end of word :%d\n", tree->label, tree->isEndOfWord);
+        //printf("label : %s\t end of the word :%s\n", tree->label, newWord);
         *result = realloc(*result, (*count + 1) * sizeof(char *));
         (*result)[*count] = strdup(newWord);
         (*count)++;

@@ -47,21 +47,21 @@ int main() {
 
     // Build the Patricia Trie from the phrase
     PatriciaNode * pat = buildPatriciaFromPhrase(patriciaRoot, phrase);
-    printf("Patricia Trie successfully built from the given phrase.\n");
+    //printf("Patricia Trie successfully built from the given phrase.\n");
 
     int res = countWords(pat);
-    printf("nb of words in patricia tree of the exemple : %d\n should be 37\n", res);
+    printf("nb of words in patricia tree of the exemple : %d\n should be 36\n", res);
 
-    // char** list = ListeMots(pat);
-    // for(int i = 0; i < res; i++ ){
-    //     printf("%s\n", list[i]);
-    // }
+    char** list = ListeMots(pat);
+    for(int i = 0; i < res; i++ ){
+        printf("%s\n", list[i]);
+    }
 
     printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // good result?.
-    printf("nb of pointer to null  : %d\n\n", ComptageNil(pat));
-    printf("prof moyenne : %d\n", ProfondeurMoyenne(pat));
+    //printf("nb of pointer to null  : %d\n\n", ComptageNil(pat));
+    //printf("prof moyenne : %d\n", ProfondeurMoyenne(pat));
     printf("nb de mot dans l'arbre ayant pour prefixe dactylo: %d\n",Prefixe(pat, "dactylo")); 
-    printf("Search for clavier: %s\n", searchPatricia(pat, "clavier") ? "Found" : "Not Found");
+    printf("Search for dactylo: %s\n", searchPatricia(pat, "dactylo") ? "Found" : "Not Found");
     
     //Suppression works but so doesn't take into account isEndOfWord
     PatriciaNode* pat2 =Suppression(pat, "dactylo");
