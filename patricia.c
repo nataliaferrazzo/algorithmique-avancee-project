@@ -158,7 +158,6 @@ void collectWords(PatriciaNode *tree, char *currentWord, char ***result, int *co
 
     // if it's the end of a word add to the result list
     if (tree->isEndOfWord) {
-        //printf("label : %s\t end of the word :%s\n", tree->label, newWord);
         *result = realloc(*result, (*count + 1) * sizeof(char *));
         (*result)[*count] = strdup(newWord);
         (*count)++;
@@ -360,7 +359,14 @@ PatriciaNode *Suppression(PatriciaNode *tree, const char *word) {
     return supprimerMot(tree, word);
 }
 
-
+PatriciaNode *MergePatricia(PatriciaNode *tree1, PatriciaNode *tree2){
+    char **list_tmp = ListeMots(tree2); //maybe check how to handle the memory and free the list at the end
+    int nb = countWords(tree2);
+    for(int i = 0; i < nb-1; i++ ){
+        insertPatricia(tree1, list_tmp[i]);
+    }
+    return tree1;
+}
 
 
 

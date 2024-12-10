@@ -60,13 +60,13 @@ int main() {
     printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // good result?.
     printf("nb of pointer to null  : %d\n\n", ComptageNil(pat));
     printf("prof moyenne : %d\n", ProfondeurMoyenne(pat));
-    printf("nb de mot dans l'arbre ayant pour prefixe dactylo: %d\n",Prefixe(pat, "dactylo")); 
+    printf("nb de mot dans l'arbre ayant pour prefixe dactylo: %d\n",Prefixe(pat, "d")); 
     printf("Search for dessous: %s\n\n", searchPatricia(pat, "dessous") ? "Found" : "Not Found");
     
     //Suppression works but so doesn't take into account isEndOfWord
-    printf("List of the words in the tree after suppression of dactylo:\n");
-    PatriciaNode* pat2 =Suppression(pat, "dactylo");
-    char** list2 = ListeMots(pat2);
+    //printf("List of the words in the tree after suppression of dactylo:\n");
+    //PatriciaNode* pat2 =Suppression(pat, "dactylo");
+    char** list2 = ListeMots(pat);
     for(int i = 0; i < res-1; i++ ){
         printf("%s\n", list2[i]);
     }
