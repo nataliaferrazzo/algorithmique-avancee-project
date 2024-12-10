@@ -17,7 +17,25 @@ To merge two Patricia trees the main steps are:
 
 There is maybe a better way to do it by comparing directly the prefixes but the implementations would be harder, as we already the fonctions to do the described method.
 
+Question 4.9 :
+For each fonction the complexity will be based on the number of comparaison done in the fonction.
 
+    SearchPatricia(tree, word): complexity of searchPatricia function is O(n), where n is the length of the input word.
+This accounts for the compact representation of prefixes which allows us, after only one comparaison in the previous children, to find the one where there is a common prefixe.
+    countWords(root):
+
+    hauteur(tree):
+complexity for this fonction is the number of node in the tree as we have to go throught each one o find which branch is the biggest.
+
+ListeMots(tree):
+
+ComptageNil(tree):
+
+ProfondeurMoyenne(tree):
+
+Prefixe(tree, word):
+
+Suppression(tree, word):
 
 
 
