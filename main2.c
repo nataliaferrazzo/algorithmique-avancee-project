@@ -1,8 +1,8 @@
 /* For question 5 :
 line to compil the main2.c, to test the bash script :
-gcc -Wall -g -o main2 main2.c patricia.h patricia.c
+gcc -Wall -g -o main2 main2.c patricia.h patricia.c -I/usr/local/include -L/usr/local/lib -lcjson
 line to execute the bash script:
-bash ./script.sh create 0 fiel1.txt file2.txt
+bash ./script.sh inserer 0 "./nomduFile"
 
 */
 #include <stdio.h>
@@ -11,87 +11,309 @@ bash ./script.sh create 0 fiel1.txt file2.txt
 #include <ctype.h>
 #include "patricia.h"
 
-PatriciaNode* buildPatriciaFromPhrase(PatriciaNode *root, const char *phrase) {
-    char buffer[256];
-    int pos = 0;
+void serializePatriciaNode(FILE *file, PatriciaNode *node, int depth) {
+    fprintf(file, "{\n");
 
-    for (int i = 0; phrase[i]; i++) {
-        if (isalnum(phrase[i])) {
-            // Build alphanumeric words
-            buffer[pos++] = phrase[i];
-        } else {
-            // Handle the end of a word
-            if (pos > 0) {
-                buffer[pos] = '\0';        // Null-terminate the word
-                insertPatricia(root, buffer); // Insert the word into the Patricia Trie
-                pos = 0;                  // Reset the buffer
-            }
-            // Handle punctuation as a separate token
-            if (!isspace(phrase[i])) {
-                char punctuation[2] = {phrase[i], '\0'}; // Single-character punctuation
-                insertPatricia(root, punctuation);
-            }
+    // Indent and write the label
+    for (int i = 0; i <= depth; i++) {
+        fprintf(file, "\t");
+    }
+    fprintf(file, "\"label\": \"%s\",\n", node->label);
+
+    // Indent and write the is_end_of_word flag
+    for (int i = 0; i <= depth; i++) {
+        fprintf(file, "\t");
+    }
+    fprintf(file, "\"is_end_of_word\": %s,\n", node->isEndOfWord ? "true" : "false");
+
+    // Indent and start the children object
+    for (int i = 0; i <= depth; i++) {
+        fprintf(file, "\t");
+    }
+    fprintf(file, "\"children\": {\n");
+
+    // Recursively serialize each child
+    for (int i = 0; i < node->childrenCount; i++) {
+        if (i > 0) {
+            fprintf(file, ",\n");
         }
+        for (int j = 0; j <= depth + 1; j++) {
+            fprintf(file, "\t");
+        }
+        fprintf(file, "\"%c\": ", node->children[i]->label[0]);
+        serializePatriciaNode(file, node->children[i], depth + 2);
     }
 
-    // Handle the last word if any
-    if (pos > 0) {
-        buffer[pos] = '\0';
-        insertPatricia(root, buffer);
+    if (node->childrenCount > 0) {
+        fprintf(file, "\n");
     }
-    return root;
+    for (int i = 0; i <= depth; i++) {
+        fprintf(file, "\t");
+    }
+    fprintf(file, "}\n");
+
+    // Close the JSON object
+    for (int i = 0; i < depth; i++) {
+        fprintf(file, "\t");
+    }
+    fprintf(file, "}");
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char *argv[]) {
-    printf("in the main file");
-    if (argc < 3) {
-        printf("Usage: %s <command> <trie_type> [other arguments]\n", argv[0]);
+    
+    if (argc != 4 && argc != 5) {
+        printf("Usage: %s <command> <trie_type> <input_file> [other arguments]\n", argv[0]);
+        return 1;
+    }
+
+    FILE *inputFile = fopen(argv[3], "rb");
+    if (!inputFile) {
+        fprintf(stderr, "Error: Could not open input file '%s'.\n", inputFile);
         return 1;
     }
 
     const char *command = argv[1];
     const char *trie_type = argv[2];
+    int type = atoi(trie_type);
 
-    if (strcmp(command, "create\0") == 0) {
-        
+    if (strcmp(command, "inserer\0") == 0) {
+
         // Call function to create the trie
-        if (argc != 5) {
-            printf("Usage: %s create <trie_type> <input_file> <output_file>\n", argv[0]);
+        if (argc != 4) {//5
+            printf("Usage: %s inserer <trie_type> <input_file> <output_file>\n", argv[0]);
+            fclose(inputFile);
             return 1;
         }
-        const char *input_file = argv[3];
-        const char *output_file = argv[4];
-        
-        int type = atoi(trie_type);
+
+        FILE *outputFile = fopen("./pat.json", "wb");
+        if (!outputFile) {
+            fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+            fclose(inputFile); // Close the input file before exiting
+            return 1;
+        }
+
+        char buffer[1024];
+        int ch, index = 0;
+
         if(type == 0){
-            const char *phrase = "A quel genial professeur de dactylographie sommes redevables de la superbe phrase ci dessous, un modele du genre, que toute dactylo connait par coeur puisque elle fait appel a chacune des touches du clavier de la machine a ecrire ?";
-            // Create the root of the Patricia Trie
-            PatriciaNode *patriciaRoot = createPatriciaNode("");
 
-            // Build the Patricia Trie from the phrase
-            PatriciaNode * pat = buildPatriciaFromPhrase(patriciaRoot, phrase);
-
-            int res = countWords(pat);
-            char** list2 = ListeMots(pat);
-            for(int i = 0; i < res-1; i++ ){
-                printf("%s\n", list2[i]);
+            PatriciaNode *pat = createPatriciaNode("");
+            while ((ch = fgetc(inputFile)) != EOF) {
+                if (ch == '\n') {
+                    if (index > 0) {
+                        buffer[index] = '\0'; // Null-terminate the word
+                        insertPatricia(pat, buffer);
+                        index = 0; // Reset buffer for the next word
+                    }
+                } else {
+                    if (index < 1023) {
+                        buffer[index++] = ch;
+                    }
+                }
             }
-            //createTrie(trie_type, input_file, output_file);
-        }else if(type == 1){
-            //call the create fct with hybrides tries
+            if (index > 0) {
+                buffer[index] = '\0'; // Null-terminate the last word
+                insertPatricia(pat, buffer); // Insert the last word into the trie
+            }
+
+            //FILE *outputFile = fopen("pat.json", "wb");
+            serializePatriciaNode(outputFile, pat, 0);
+
+            fclose(outputFile);
+        } else if(type == 1){
+            printf("should call insert with hybrid-trie\n");
+            
         }
         
-    } else if (strcmp(command, "insert") == 0) {
-        // Call function to insert into the trie
-        // Similarly handle "insert"
-    } else if (strcmp(command, "delete") == 0) {
+        
+    } else if (strcmp(command, "fusion") == 0) {
+
+        // Call function to create the trie
+        if (argc != 5) {
+            printf("Usage: %s inserer <trie_type> <input_file> <output_file>\n", argv[0]);
+            fclose(inputFile);
+            return 1;
+        }
+
+        if(type == 0){
+
+            PatriciaNode *pat1 = buildPatriciaFromFile(argv[3]);
+            PatriciaNode *pat2 = buildPatriciaFromFile(argv[4]);
+            PatriciaNode *pat3 = MergePatricia(pat1,pat2);
+
+            
+            FILE *outputFile = fopen("./pat.json", "wb");
+            if (!outputFile) {
+                fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+                fclose(inputFile); // Close the input file before exiting
+                return 1;
+            }
+            serializePatriciaNode(outputFile, pat3, 0);
+
+            fclose(outputFile);
+
+        } else if(type == 1){
+
+        }
+
+    } else if (strcmp(command, "suppression") == 0) {
+        if (argc != 4) {
+            printf("Usage: %s suppression <trie_type> <input_file> <output_file>\n", argv[0]);
+            fclose(inputFile);
+            return 1;
+        }
+        
+
+        char buffer[1024];
+        int ch, index = 0;
+
+        if(type == 0){
+
+            
+            PatriciaNode *pat = buildPatriciaFromFile("pat.json");
+
+            
+
+            while ((ch = fgetc(inputFile)) != EOF) {
+                if (ch == '\n') {
+                    if (index > 0) {
+                        buffer[index] = '\0'; // Null-terminate the word
+                        Suppression(pat, buffer);
+                        index = 0; // Reset buffer for the next word
+                    }
+                } else {
+                    if (index < 1023) {
+                        buffer[index++] = ch;
+                    }
+                }
+            }
+            if (index > 0) {
+                buffer[index] = '\0'; // Null-terminate the last word
+                Suppression(pat, buffer); // Insert the last word into the trie
+            }
+
+            FILE *outputFile = fopen("pat.json", "wb");
+            if (!outputFile) {
+                fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+                fclose(inputFile); // Close the input file before exiting
+                return 1;
+            }
+            
+            serializePatriciaNode(outputFile, pat, 0);
+
+            fclose(outputFile);
+
+        }else if(type == 1){
+
+        }
         // Call function to delete from the trie
         // Similarly handle "delete"
+    } else if (strcmp(command, "listeMots") == 0) {
+        if (argc != 4) {
+            printf("Usage: %s listeMots <trie_type> <input_file>\n", argv[0]);
+            fclose(inputFile);
+            return 1;
+        }
+        
+
+        if(type == 0){
+
+            
+            PatriciaNode *pat = buildPatriciaFromFile(argv[3]);
+            int res = countWords(pat);
+            char ** liste = ListeMots(pat);
+
+            FILE *outputFile = fopen("mot.txt", "wb");
+            if (!outputFile) {
+                fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+                fclose(inputFile); // Close the input file before exiting
+                return 1;
+            }
+            
+            for (int i = 0; i < res; i++) { //liste[i] != NULL
+                fprintf(outputFile, "%s\n", liste[i]); // Write each word followed by a newline
+            }
+                        
+            fclose(outputFile);
+
+        } else if(type == 1){
+
+        }
+
+    } else if (strcmp(command, "profondeurMoyenne") == 0) {
+        if (argc != 4) {
+            printf("Usage: %s profondeurMoyenne <trie_type> <input_file> \n", argv[0]);
+            fclose(inputFile);
+            return 1;
+        }
+        
+
+        if(type == 0){
+
+            PatriciaNode *pat = buildPatriciaFromFile(argv[3]);
+            float res = ProfondeurMoyenne(pat);
+            
+
+            FILE *outputFile = fopen("profondeur.txt", "wb");
+            if (!outputFile) {
+                fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+                fclose(inputFile); // Close the input file before exiting
+                return 1;
+            }
+            
+            fprintf(outputFile, "%f\n", res); // Write each word followed by a newline
+                        
+            fclose(outputFile);
+
+        } else if(type == 1){
+
+        }
+
+    } else if (strcmp(command, "prefixe") == 0) {
+        if (argc != 5) {
+            printf("Usage: %s profondeurMoyenne <trie_type> <input_file> <prefixe>\n", argv[0]);
+            fclose(inputFile);
+            return 1;
+        }
+        if(type == 0){
+            PatriciaNode *pat = buildPatriciaFromFile(argv[3]);//maybe change pat.json to argv[3]
+            char **res = ListeMots(rechercherPrefixe(pat, argv[4]));
+            
+
+            FILE *outputFile = fopen("prefixe.txt", "wb");
+            if (!outputFile) {
+                fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+                fclose(inputFile); // Close the input file before exiting
+                return 1;
+            }
+            if (res == NULL) return 1;
+            for (int i = 0; res[i] != NULL; i++) {
+                fprintf(outputFile, "%s\n", res[i]);
+            }
+                        
+            fclose(outputFile);
+
+        } else if(type == 1){
+
+        }
     } else {
         printf("Unknown command: %s\n", command);
         return 1;
     }
 
+    fclose(inputFile);
     return 0;
 }
 

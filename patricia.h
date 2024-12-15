@@ -19,8 +19,11 @@ int countWords(PatriciaNode *root);
 int hauteur(PatriciaNode *tree);
 char ** ListeMots(PatriciaNode *tree);
 int ComptageNil(PatriciaNode *tree);
-int ProfondeurMoyenne(PatriciaNode *tree);
+float ProfondeurMoyenne(PatriciaNode *tree);
 int Prefixe(PatriciaNode *tree, char* word);
 PatriciaNode *Suppression(PatriciaNode *tree, const char *word);
+PatriciaNode *MergePatricia(PatriciaNode *tree1, PatriciaNode *tree2);
+PatriciaNode *buildPatriciaFromFile(const char *filename);
+PatriciaNode *rechercherPrefixe(PatriciaNode *node, const char *mot);
 
 #endif // PATRICIA_H

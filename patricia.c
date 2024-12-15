@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "cJSON.h" // Ensure you have cJSON installed and linked properly
 #include "patricia.h"
 
 // Create a new Patricia-Trie node
@@ -234,7 +235,7 @@ void calculerProfondeur(PatriciaNode *tree, int profondeurActuelle, int *sommePr
     }
 }
 
-int ProfondeurMoyenne(PatriciaNode *tree) {
+float ProfondeurMoyenne(PatriciaNode *tree) {
     if (tree == NULL) return 0;
 
     int sommeProfondeurs = 0;
@@ -244,7 +245,7 @@ int ProfondeurMoyenne(PatriciaNode *tree) {
 
     // Calculer la moyenne
     if (nbFeuilles == 0) return 0; // to avoid to divide by zero
-    return sommeProfondeurs / nbFeuilles;
+    return (float) sommeProfondeurs / nbFeuilles;
 }
 
 
@@ -301,18 +302,19 @@ PatriciaNode *supprimerMot(PatriciaNode *node, const char *word) {
     if (node == NULL || word[0] == '\0') return node;
 
     for (int i = 0; i < node->childrenCount; i++) {
-        PatriciaNode *child = node->children[i];
+        PatriciaNode *current = node->children[i];
         // Check if the label matches the start of the word
-        if (strncmp(child->label, word, strlen(child->label)) == 0) {
+        if (strncmp(current->label, word, strlen(current->label)) == 0) {
             // If the word continues beyond this node
-            if (strlen(word) > strlen(child->label)) {
+            if (strlen(word) > strlen(current->label)) {
                 // Recurse into the subtree
-                node->children[i] = supprimerMot(child, word + strlen(child->label));
+                current = supprimerMot(current, word + strlen(current->label));
 
-                // If the child node is now empty, remove it
-                if (node->children[i] == NULL) {
-                    // Free the child node
-                    libererNoeud(child);
+                // If the current node is now empty, remove it
+                if (current->childrenCount == 0 && !current->isEndOfWord){//node->children[i]
+                    
+                    // Free the current node
+                    libererNoeud(current);
 
                     // Shift the remaining children
                     for (int j = i; j < node->childrenCount - 1; j++) {
@@ -323,16 +325,16 @@ PatriciaNode *supprimerMot(PatriciaNode *node, const char *word) {
                     node->children = realloc(node->children, node->childrenCount * sizeof(PatriciaNode *));
                 }
 
-                return node; // Return the current node after modification
+                return node;
             } else {
                 // This is the node corresponding to the word
-                if (strlen(word) == strlen(child->label)) {
-                    if (child->isEndOfWord) {
-                        child->isEndOfWord = false;
+                if (strlen(word) == strlen(current->label)) {
+                    if (current->isEndOfWord) {
+                        current->isEndOfWord = false;
 
                         // If the node has no children, remove it
-                        if (child->childrenCount == 0) {
-                            libererNoeud(child);
+                        if (current->childrenCount == 0) {
+                            libererNoeud(current);
 
                             // reindex the other children
                             for (int j = i; j < node->childrenCount - 1; j++) {
@@ -370,3 +372,70 @@ PatriciaNode *MergePatricia(PatriciaNode *tree1, PatriciaNode *tree2){
 
 
 
+// Recursive function to build the Patricia trie
+PatriciaNode *buildPatriciaFromJSON(cJSON *json) {
+    // Create a PatriciaNode from the current JSON object
+    cJSON *label = cJSON_GetObjectItem(json, "label");
+    cJSON *isEndOfWord = cJSON_GetObjectItem(json, "is_end_of_word");
+    cJSON *children = cJSON_GetObjectItem(json, "children");
+
+    PatriciaNode *node = createPatriciaNode(cJSON_GetStringValue(label));
+    node->isEndOfWord = cJSON_IsTrue(isEndOfWord);
+
+    if (cJSON_IsObject(children)) {
+        int childCount = 0;
+        cJSON *child;
+
+        // Count the number of children
+        cJSON_ArrayForEach(child, children) {
+            childCount++;
+        }
+
+        // Allocate memory for the children
+        node->children = (PatriciaNode **)malloc(childCount * sizeof(PatriciaNode *));
+        node->childrenCount = childCount;
+
+        int index = 0;
+        cJSON_ArrayForEach(child, children) {
+            node->children[index++] = buildPatriciaFromJSON(child);
+        }
+    }
+
+    return node;
+}
+
+// Wrapper function to read JSON from a file and build the trie
+PatriciaNode *buildPatriciaFromFile(const char *filename) {
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        fprintf(stderr, "Error: Could not open file '%s'.\n", filename);
+        return NULL;
+    }
+
+    // Read the entire file into memory
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    rewind(file);
+
+    char *buffer = (char *)malloc(fileSize + 1);
+    fread(buffer, 1, fileSize, file);
+    fclose(file);
+    buffer[fileSize] = '\0';
+
+    // Parse the JSON data
+    cJSON *json = cJSON_Parse(buffer);
+    free(buffer);
+
+    if (!json) {
+        fprintf(stderr, "Error: Failed to parse JSON.\n");
+        return NULL;
+    }
+
+    // Build the Patricia trie
+    PatriciaNode *root = buildPatriciaFromJSON(json);
+
+    // Clean up JSON object
+    //cJSON_Delete(json);
+
+    return root;
+}
