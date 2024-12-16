@@ -59,7 +59,7 @@ int countWordsHybrid(HybridTrieNode *tree) {
 }
 
 
-void collectWords(HybridTrieNode *tree, char *currentWord, char ***result, int *count) {
+void collectWordsH(HybridTrieNode *tree, char *currentWord, char ***result, int *count) {
     if (tree == NULL) return;
 
     int len1 = strlen(currentWord);
@@ -77,9 +77,9 @@ void collectWords(HybridTrieNode *tree, char *currentWord, char ***result, int *
     }
 
     // Traverse the children: left, middle, right
-    collectWords(tree->left, currentWord, result, count);      // Traverse left child
-    collectWords(tree->middle, newWord, result, count);    // Traverse middle child
-    collectWords(tree->right, currentWord, result, count);     // Traverse right child
+    collectWordsH(tree->left, currentWord, result, count);      // Traverse left child
+    collectWordsH(tree->middle, newWord, result, count);    // Traverse middle child
+    collectWordsH(tree->right, currentWord, result, count);     // Traverse right child
     
     free(newWord);
 }
@@ -92,7 +92,7 @@ char ** ListeMotsHybrid(HybridTrieNode *tree) {
     char **list = NULL;
     int count = 0;
 
-    collectWords(tree, "", &list, &count);
+    collectWordsH(tree, "", &list, &count);
 
     return list;
 }

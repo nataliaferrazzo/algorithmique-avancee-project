@@ -9,7 +9,9 @@ bash ./script.sh inserer 0 "./nomduFile"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "patricia.h"
+#include "cJSON.h"//cJSON/
+#include "patricia.h"  // Include the header for declarations
+#include "hybrid.h"
 
 void serializePatriciaNode(FILE *file, PatriciaNode *node, int depth) {
     fprintf(file, "{\n");

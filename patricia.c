@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include "cJSON/cJSON.h" // Ensure you have cJSON installed and linked properly
 #include "patricia.h"
-
 // Create a new Patricia-Trie node
 PatriciaNode* createPatriciaNode(const char *label) {
     PatriciaNode *node = (PatriciaNode *)malloc(sizeof(PatriciaNode));
