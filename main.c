@@ -2,9 +2,67 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "patricia.h"
+#include "cJSON/cJSON.h"
+#include "patricia.h"  // Include the header for declarations
 
+// Function to convert a Patricia Trie node to JSON
+cJSON* patriciaToJson(PatriciaNode *node) {
+    if (node == NULL) {
+        return NULL;
+    }
 
+    // Create a JSON object for the current node
+    cJSON *jsonNode = cJSON_CreateObject();
+
+    // Add the label of the current node
+    cJSON_AddStringToObject(jsonNode, "label", node->label);
+
+    // Add the is_end_of_word flag to the JSON object (true/false)
+    cJSON_AddStringToObject(jsonNode, "is_end_of_word", node->isEndOfWord ? "yes" : "no");
+
+    // If the node has children, recursively add them as a JSON object
+    if (node->childrenCount > 0) {
+        cJSON *childrenObject = cJSON_CreateObject();
+
+        for (int i = 0; i < node->childrenCount; i++) {
+            // Recursive call to process each child node
+            cJSON *childJson = patriciaToJson(node->children[i]);
+            if (childJson != NULL) {
+                // Add each child as a key-value pair in the children object
+                cJSON_AddItemToObject(childrenObject, node->children[i]->label, childJson);
+            }
+        }
+
+        // Add the children object to the current node
+        cJSON_AddItemToObject(jsonNode, "children", childrenObject);
+    }
+
+    return jsonNode;
+}
+
+// Function to save the Patricia Trie to a JSON file
+void savePatriciaToJsonFile(PatriciaNode *root, const char *filename) {
+    // Convert the Patricia Trie to JSON
+    cJSON *jsonRoot = patriciaToJson(root);
+    
+    // Serialize the JSON object to a string
+    char *jsonString = cJSON_Print(jsonRoot);
+    
+    // Open the file for writing
+    FILE *file = fopen(filename, "w");
+    if (file != NULL) {
+        // Write the JSON string to the file
+        fprintf(file, "%s", jsonString);
+        fclose(file);
+        printf("Successfully saved the Patricia Trie to %s\n", filename);
+    } else {
+        printf("Error: Unable to open file for writing\n");
+    }
+
+    // Clean up
+    free(jsonString);
+    cJSON_Delete(jsonRoot);
+}
 
 // Function to insert words and punctuation into the Patricia Trie
 PatriciaNode* buildPatriciaFromPhrase(PatriciaNode *root, const char *phrase) {
@@ -46,19 +104,14 @@ int main() {
     PatriciaNode *patriciaRoot = createPatriciaNode("");
 
     // Build the Patricia Trie from the phrase
-    PatriciaNode * pat = buildPatriciaFromPhrase(patriciaRoot, phrase);
+    PatriciaNode *pat = buildPatriciaFromPhrase(patriciaRoot, phrase);
     printf("Patricia Trie successfully built from the given phrase.\n");
 
     int res = countWords(pat);
-    printf("nb of words in patricia tree of the exemple : %d\n should be 37\n", res);
-    printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // do not work properly, should be 3 and give 5.
+    printf("Number of words in patricia tree of the example: %d\nShould be 37.\n", res);
+    printf("Tree height: %d\n", hauteur(pat)); // This might not work as expected (see your comment).
     
-
-    // Test searching for words and punctuation
-    /*const char *testTokens[] = {"dactylographie", "A", "phrase", ",", "ci", "dessous,", "?", "inexistent"};
-    for (int i = 0; i < 8; i++) {
-        printf("Search for '%s': %s\n", testTokens[i], searchPatricia(patriciaRoot, testTokens[i]) ? "Found" : "Not Found");
-    }*/
-
+    // Save the Patricia Trie to a JSON file
+    savePatriciaToJsonFile(pat, "patricia_trie.json");
     return 0;
 }
