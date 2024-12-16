@@ -108,7 +108,7 @@ int main() {
     printf("Patricia Trie successfully built from the given phrase.\n");
 
     int res = countWords(pat);
-    printf("nb of words in patricia tree of the exemple : %d\n should be 36\n", res);
+    printf("Number of words in patricia tree of the example: %d\nShould be 36.\n", res);
 
     // char** list = ListeMots(pat);
     // for(int i = 0; i < res; i++ ){
@@ -117,7 +117,7 @@ int main() {
 
     printf("hauteur de l'arbre : %d\n\n", hauteur(pat)); // good result?.
     printf("nb of pointer to null  : %d\n\n", ComptageNil(pat));
-    printf("prof moyenne : %d\n", ProfondeurMoyenne(pat));
+    printf("prof moyenne : %f\n", ProfondeurMoyenne(pat));
     printf("nb de mot dans l'arbre ayant pour prefixe dactylo: %d\n",Prefixe(pat, "d")); 
     printf("Search for dessous: %s\n\n", searchPatricia(pat, "dessous") ? "Found" : "Not Found");
     
@@ -128,10 +128,6 @@ int main() {
     for(int i = 0; i < res-1; i++ ){
         printf("%s\n", list2[i]);
     }
-    
-
-    printf("Number of words in patricia tree of the example: %d\nShould be 37.\n", res);
-    printf("Tree height: %d\n", hauteur(pat)); // This might not work as expected (see your comment).
     
     // Save the Patricia Trie to a JSON file
     savePatriciaToJsonFile(pat, "patricia_trie.json");

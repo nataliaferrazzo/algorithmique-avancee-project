@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "cJSON.h" // Ensure you have cJSON installed and linked properly
+#include "cJSON/cJSON.h" // Ensure you have cJSON installed and linked properly
 #include "patricia.h"
 
 // Create a new Patricia-Trie node
