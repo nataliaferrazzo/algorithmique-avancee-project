@@ -19,11 +19,20 @@ There is maybe a better way to do it by comparing directly the prefixes but the 
 
 Question 4.9 :
 For each fonction the complexity will be based on the number of comparaison done in the fonction.
-To check if the label matches the start of the word in the worst case we need to check over all the letter of the alphabet. And so for all the following fonctions if the complexity founded is smaller than this one (for a specific input),
-we would have to take the alphabet size.
+To check if the label matches the start of the word in the worst case we need to check over all the letter of the alphabet. 
+So this can be the worst case but as it's a constant, in trees with a lot of words the complexity find in the desciptio will be more important.
 
-    SearchPatricia(tree, word): complexity of searchPatricia function is O(n), where n is the length of the input word.
-This accounts for the compact representation of prefixes which allows us, after only one comparaison in the previous children, to find the one where there is a common prefixe.
+    SearchPatricia(tree, word):
+Worst Case: At each of the n levels, the function performs O(K * L) comparisons, where:
+
+K is the number of children (depends on the branching factor of the tree, often small for a Patricia tree in practice).
+L is the length of the label being compared (a fraction of n).
+In the worst case, the comparisons can involve all characters of the word at each level.
+
+Total complexity:
+O(n⋅K⋅L)
+For K bounded by the alphabet size (constant for most cases) and L bounded by N, this simplifies to:
+O(n²)
 
     countWords(root):
 This fonction just has to go throught every nodes and for each one check if isEndOfWord is true.
@@ -44,7 +53,7 @@ complexity for this fonction is the number of node in the tree as we have to go 
 complexity for this fonction is also the number of node in the tree as we have to go throught each one to add their depht. We then just have to do a division by the number of leafs.
 
     Prefixe(tree, word):
-In the worst case there are lot of words with the same prefixe and they might also have some other prefixe in common, and they are far in the list of children.
+In the worst case there are lot of words with the same prefixe, they might also have some other prefixe in common and they are far in the list of children.
 So would be the max between : 
     alphabet size * length of prefixe wanted 
     the number of nodes in the subtree from the common prefixe
@@ -53,7 +62,13 @@ So would be the max between :
 I don't know yet but it's at least the same as searchPatricia because we have to find the word. And then maybe to handle there is a comparaison to know if we have to delete the node or not.
 but deleting the node is probaly not important when calling this fonction on a big tree . 
 
+Pour Hybrid-trie:
 
+    recherche:
+La fonction effectue une comparaison par niveau de l’arbre (caractère par caractère du mot). 
+On peut parcourir jusqu'à H niveaux. H est la hauteur de l'arbre.
+Si l’arbre est équilibré, on visite environ log n niveaux avant de terminer. 
+Donc O(H) avec O(log n) si un reequilibrage est fait apres insertion de valeurs.
 
 
 

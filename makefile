@@ -1,18 +1,22 @@
 CC = gcc
 CFLAGS = -Wall -g
 LDFLAGS = -lcjson  # Add this line to link with cJSON library
-OBJ = main.o patricia.o
+OBJ = main.o patricia.o hybrid.o
 
 all: main
 
 main: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o main $(OBJ)  # Add $(LDFLAGS) here to link with cJSON
 
-main.o: main.c patricia.h
+main.o: main.c hybrid.h patricia.h
 	$(CC) $(CFLAGS) -c main.c
 
 patricia.o: patricia.c patricia.h
 	$(CC) $(CFLAGS) -c patricia.c
+
+hybrid.o: hybrid.c hybrid.h
+	$(CC) $(CFLAGS) -c hybrid.c
+
 
 clean:
 	rm -f *.o main

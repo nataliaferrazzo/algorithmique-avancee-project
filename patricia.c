@@ -209,7 +209,7 @@ int hauteur(PatriciaNode *tree){
     if (tree == NULL) {
         return -1;
     }
-    int res = -1; // why is it better to start from -1?
+    int res = -1; // as a tree with single node has a height of 0
     
     for (int i = 0; i < tree->childrenCount; i++) { 
         int tmp = hauteur(tree->children[i]);
