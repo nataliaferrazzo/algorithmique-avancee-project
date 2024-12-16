@@ -1,0 +1,230 @@
+{
+	"label":	"",
+	"is_end_of_word":	"no",
+	"children":	{
+		"A":	{
+			"label":	"A",
+			"is_end_of_word":	"yes"
+		},
+		"que":	{
+			"label":	"que",
+			"is_end_of_word":	"no",
+			"children":	{
+				"l":	{
+					"label":	"l",
+					"is_end_of_word":	"yes"
+				},
+				"":	{
+					"label":	"",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"gen":	{
+			"label":	"gen",
+			"is_end_of_word":	"no",
+			"children":	{
+				"ial":	{
+					"label":	"ial",
+					"is_end_of_word":	"yes"
+				},
+				"re":	{
+					"label":	"re",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"p":	{
+			"label":	"p",
+			"is_end_of_word":	"no",
+			"children":	{
+				"rofesseur":	{
+					"label":	"rofesseur",
+					"is_end_of_word":	"yes"
+				},
+				"hrase":	{
+					"label":	"hrase",
+					"is_end_of_word":	"yes"
+				},
+				"ar":	{
+					"label":	"ar",
+					"is_end_of_word":	"yes"
+				},
+				"uisque":	{
+					"label":	"uisque",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"d":	{
+			"label":	"d",
+			"is_end_of_word":	"no",
+			"children":	{
+				"e":	{
+					"label":	"e",
+					"is_end_of_word":	"yes",
+					"children":	{
+						"s":	{
+							"label":	"s",
+							"is_end_of_word":	"no",
+							"children":	{
+								"sous":	{
+									"label":	"sous",
+									"is_end_of_word":	"yes"
+								},
+								"":	{
+									"label":	"",
+									"is_end_of_word":	"yes"
+								}
+							}
+						}
+					}
+				},
+				"actylo":	{
+					"label":	"actylo",
+					"is_end_of_word":	"no",
+					"children":	{
+						"graphie":	{
+							"label":	"graphie",
+							"is_end_of_word":	"yes"
+						},
+						"":	{
+							"label":	"",
+							"is_end_of_word":	"yes"
+						}
+					}
+				},
+				"u":	{
+					"label":	"u",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"s":	{
+			"label":	"s",
+			"is_end_of_word":	"no",
+			"children":	{
+				"ommes":	{
+					"label":	"ommes",
+					"is_end_of_word":	"yes"
+				},
+				"uperbe":	{
+					"label":	"uperbe",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"redevables":	{
+			"label":	"redevables",
+			"is_end_of_word":	"yes"
+		},
+		"la":	{
+			"label":	"la",
+			"is_end_of_word":	"yes"
+		},
+		"c":	{
+			"label":	"c",
+			"is_end_of_word":	"no",
+			"children":	{
+				"i":	{
+					"label":	"i",
+					"is_end_of_word":	"yes"
+				},
+				"o":	{
+					"label":	"o",
+					"is_end_of_word":	"no",
+					"children":	{
+						"nnait":	{
+							"label":	"nnait",
+							"is_end_of_word":	"yes"
+						},
+						"eur":	{
+							"label":	"eur",
+							"is_end_of_word":	"yes"
+						}
+					}
+				},
+				"hacune":	{
+					"label":	"hacune",
+					"is_end_of_word":	"yes"
+				},
+				"lavier":	{
+					"label":	"lavier",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		",":	{
+			"label":	",",
+			"is_end_of_word":	"yes"
+		},
+		"un":	{
+			"label":	"un",
+			"is_end_of_word":	"yes"
+		},
+		"m":	{
+			"label":	"m",
+			"is_end_of_word":	"no",
+			"children":	{
+				"odele":	{
+					"label":	"odele",
+					"is_end_of_word":	"yes"
+				},
+				"achine":	{
+					"label":	"achine",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"tou":	{
+			"label":	"tou",
+			"is_end_of_word":	"no",
+			"children":	{
+				"te":	{
+					"label":	"te",
+					"is_end_of_word":	"yes"
+				},
+				"ches":	{
+					"label":	"ches",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"e":	{
+			"label":	"e",
+			"is_end_of_word":	"no",
+			"children":	{
+				"lle":	{
+					"label":	"lle",
+					"is_end_of_word":	"yes"
+				},
+				"crire":	{
+					"label":	"crire",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"fait":	{
+			"label":	"fait",
+			"is_end_of_word":	"yes"
+		},
+		"a":	{
+			"label":	"a",
+			"is_end_of_word":	"yes",
+			"children":	{
+				"ppel":	{
+					"label":	"ppel",
+					"is_end_of_word":	"yes"
+				},
+				"":	{
+					"label":	"",
+					"is_end_of_word":	"yes"
+				}
+			}
+		},
+		"?":	{
+			"label":	"?",
+			"is_end_of_word":	"yes"
+		}
+	}
+}
