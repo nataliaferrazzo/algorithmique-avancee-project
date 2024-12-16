@@ -14,6 +14,75 @@ HybridTrieNode* createHybridTrie(char character) {
     return node;
 }
 
+// Calculate the height of the tree (height = max depth from current node to leaf)
+int height(HybridTrieNode *tree) {
+    if (tree == NULL) return -1;
+    int leftHeight = height(tree->left);
+    int middleHeight = height(tree->middle);
+    int rightHeight = height(tree->right);
+    
+    // Height of current node is 1 + max height of its children
+    return 1 + ((leftHeight > middleHeight) ? leftHeight : middleHeight) > rightHeight ? (leftHeight > middleHeight) ? leftHeight : middleHeight : rightHeight;
+}
+
+// Balance check: return true if the tree is balanced, false otherwise
+bool isBalanced(HybridTrieNode *tree) {
+    if (tree == NULL) return true;
+
+    int leftHeight = height(tree->left);
+    int rightHeight = height(tree->right);
+    int middleHeight = height(tree->middle);
+
+    // Check if the difference in height of the subtrees is greater than 1
+    if (abs(leftHeight - rightHeight) > 1 || abs(leftHeight - middleHeight) > 1 || abs(rightHeight - middleHeight) > 1) {
+        return false;
+    }
+    return true;
+}
+
+// Rotate functions to balance the tree
+
+// Right rotation
+HybridTrieNode* rightRotate(HybridTrieNode *y) {
+    HybridTrieNode *x = y->left;
+    HybridTrieNode *T2 = x->right;
+    
+    // Perform rotation
+    x->right = y;
+    y->left = T2;
+    
+    return x;  // Return new root
+}
+
+// Left rotation
+HybridTrieNode* leftRotate(HybridTrieNode *x) {
+    HybridTrieNode *y = x->right;
+    HybridTrieNode *T2 = y->left;
+    
+    // Perform rotation
+    y->left = x;
+    x->right = T2;
+    
+    return y;  // Return new root
+}
+
+// Balance the tree by performing rotations if necessary
+HybridTrieNode* balanceTree(HybridTrieNode *root) {
+    if (root == NULL) return root;
+    
+    // If left subtree is deeper than right, do a right rotation
+    if (height(root->left) > height(root->right)) {
+        root = rightRotate(root);
+    }
+    
+    // If right subtree is deeper than left, do a left rotation
+    if (height(root->right) > height(root->left)) {
+        root = leftRotate(root);
+    }
+    
+    return root;
+}
+
 HybridTrieNode* insertHybridTrie(HybridTrieNode *root, const char *word) {
     if (root == NULL) {
         root = createHybridTrie(*word);
@@ -36,6 +105,9 @@ HybridTrieNode* insertHybridTrie(HybridTrieNode *root, const char *word) {
             root->middle = insertHybridTrie(root->middle, word + 1);
         }
     }
+
+    // Balance the tree after insertion
+    root = balanceTree(root);
 
     return root;
 }

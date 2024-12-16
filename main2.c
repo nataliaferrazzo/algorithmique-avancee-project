@@ -9,7 +9,7 @@ bash ./script.sh inserer 0 "./nomduFile"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "cJSON.h"//cJSON/
+#include "cJSON/cJSON.h"//cJSON/
 #include "patricia.h"  // Include the header for declarations
 #include "hybrid.h"
 

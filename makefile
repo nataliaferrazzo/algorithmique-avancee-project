@@ -20,6 +20,5 @@ patricia.o: patricia.c patricia.h
 hybrid.o: hybrid.c hybrid.h
 	$(CC) $(CFLAGS) -c hybrid.c
 
-
 clean:
 	rm -f *.o main2
