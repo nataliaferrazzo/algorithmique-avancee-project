@@ -63,7 +63,52 @@ void serializePatriciaNode(FILE *file, PatriciaNode *node, int depth) {
 
 
 
+cJSON* hybridTrieToJson(HybridTrieNode *node) {
+    if (node == NULL) {
+        return cJSON_CreateNull();  // Return null for empty nodes
+    }
 
+    // Create a JSON object for the current node
+    cJSON *jsonNode = cJSON_CreateObject();
+    cJSON_AddStringToObject(jsonNode, "char", (char[]){node->character, '\0'});  // Add char as a string
+    cJSON_AddBoolToObject(jsonNode, "is_end_of_word", node->isEndOfWord);
+
+    // Recursively add left, middle, and right children
+    cJSON_AddItemToObject(jsonNode, "left", hybridTrieToJson(node->left));
+    cJSON_AddItemToObject(jsonNode, "middle", hybridTrieToJson(node->middle));
+    cJSON_AddItemToObject(jsonNode, "right", hybridTrieToJson(node->right));
+
+    return jsonNode;
+}
+
+// Function to write the JSON representation to a file
+void writeHybridTrieToJsonFile(HybridTrieNode *root, const char *filename) {
+    // Convert the root of the Hybrid Trie to a JSON object
+    cJSON *jsonRoot = hybridTrieToJson(root);
+
+    // Convert the JSON object to a formatted string
+    char *jsonString = cJSON_Print(jsonRoot);
+    if (jsonString == NULL) {
+        fprintf(stderr, "Error creating JSON string.\n");
+        cJSON_Delete(jsonRoot);
+        return;
+    }
+
+    // Write the JSON string to the specified file
+    FILE *file = fopen(filename, "wb");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file for writing: %s\n", filename);
+        free(jsonString);
+        cJSON_Delete(jsonRoot);
+        return;
+    }
+    fprintf(file, "%s\n", jsonString);
+    fclose(file);
+
+    // Clean up
+    free(jsonString);
+    cJSON_Delete(jsonRoot);
+}
 
 
 
@@ -99,12 +144,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        FILE *outputFile = fopen("./pat.json", "wb");
-        if (!outputFile) {
-            fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
-            fclose(inputFile); // Close the input file before exiting
-            return 1;
-        }
+        
 
         char buffer[1024];
         int ch, index = 0;
@@ -130,13 +170,41 @@ int main(int argc, char *argv[]) {
                 insertPatricia(pat, buffer); // Insert the last word into the trie
             }
 
-            //FILE *outputFile = fopen("pat.json", "wb");
+            FILE *outputFile = fopen("./pat.json", "wb");
+            if (!outputFile) {
+                fprintf(stderr, "Error: Could not open or create output file '%s'.\n", outputFile);
+                fclose(inputFile); // Close the input file before exiting
+                return 1;
+            }
             serializePatriciaNode(outputFile, pat, 0);
 
             fclose(outputFile);
+
         } else if(type == 1){
-            printf("should call insert with hybrid-trie\n");
-            
+
+            HybridTrieNode *hyb = createHybridTrie(' ');
+
+            while ((ch = fgetc(inputFile)) != EOF) {
+                if (ch == '\n') {
+                    if (index > 0) {
+                        buffer[index] = '\0'; // Null-terminate the word
+                        insertHybridTrie(hyb, buffer);
+                        index = 0; // Reset buffer for the next word
+                    }
+                } else {
+                    if (index < 1023) {
+                        buffer[index++] = ch;
+                    }
+                }
+            }
+            if (index > 0) {
+                buffer[index] = '\0'; // Null-terminate the last word
+                insertHybridTrie(hyb, buffer); // Insert the last word into the trie
+            }
+
+            writeHybridTrieToJsonFile(hyb, "hyb.json");
+
+            //fclose(outputFile);            
         }
         
         
@@ -154,7 +222,6 @@ int main(int argc, char *argv[]) {
             PatriciaNode *pat1 = buildPatriciaFromFile(argv[3]);
             PatriciaNode *pat2 = buildPatriciaFromFile(argv[4]);
             PatriciaNode *pat3 = MergePatricia(pat1,pat2);
-
             
             FILE *outputFile = fopen("./pat.json", "wb");
             if (!outputFile) {
@@ -162,12 +229,31 @@ int main(int argc, char *argv[]) {
                 fclose(inputFile); // Close the input file before exiting
                 return 1;
             }
+            
             serializePatriciaNode(outputFile, pat3, 0);
 
             fclose(outputFile);
 
         } else if(type == 1){
-
+            printf("pas de fusion pour les tries Hybrids\n");
+/*
+            HybridTrieNode *hyb1 = buildHybridFromFile(argv[3]);
+            printf("hyb1 est construit\n");
+            HybridTrieNode *hyb2 = buildHybridFromFile(argv[4]);
+            
+            if (!hyb1 || !hyb2) {
+                fprintf(stderr, "Error: Failed to build Hybrid Trie from file.\n");
+                return EXIT_FAILURE;
+            }
+            
+            HybridTrieNode *hyb3 = MergeHybrid(hyb1,hyb2);
+            if (!hyb3){
+                fprintf(stderr, "Error: qrzestxdrcfhtvgjybh.\n");
+                return EXIT_FAILURE;
+            }
+            printf("right before the issue\n");
+            writeHybridTrieToJsonFile(hyb3, "hyb.json");
+            printf("hyb should be created\n");*/
         }
 
     } else if (strcmp(command, "suppression") == 0) {

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "cJSON/cJSON.h"
 #include "hybrid.h"
 
 HybridTrieNode* createHybridTrie(char character) {
@@ -156,6 +157,12 @@ void collectWordsH(HybridTrieNode *tree, char *currentWord, char ***result, int 
     free(newWord);
 }
 
+int compareStrings(const void *a, const void *b) {
+    const char *str1 = *(const char **)a;
+    const char *str2 = *(const char **)b;
+    return strcmp(str1, str2);
+}
+
 char ** ListeMotsHybrid(HybridTrieNode *tree) {
     if (tree == NULL) {
         return NULL;
@@ -166,6 +173,9 @@ char ** ListeMotsHybrid(HybridTrieNode *tree) {
 
     collectWordsH(tree, "", &list, &count);
 
+    if (list != NULL && count > 1) {
+        qsort(list, count, sizeof(char *), compareStrings);
+    }
     return list;
 }
 
@@ -313,3 +323,86 @@ HybridTrieNode* SuppressionH(HybridTrieNode *root, const char *word) {
     return suppressionHelper(root, word, 0);  // Start deletion from the root and index 0
 }
 
+HybridTrieNode *buildHybridFromJSON(cJSON *json) {
+    if (!json) {
+        return NULL;
+    }
+
+    // Extract node information from the JSON object
+    cJSON *character = cJSON_GetObjectItem(json, "char");
+    cJSON *isEndOfWord = cJSON_GetObjectItem(json, "is_end_of_word");
+    cJSON *left = cJSON_GetObjectItem(json, "left");
+    cJSON *middle = cJSON_GetObjectItem(json, "middle");
+    cJSON *right = cJSON_GetObjectItem(json, "right");
+
+    // Create a new HybridTrieNode
+    HybridTrieNode *node = (HybridTrieNode *)malloc(sizeof(HybridTrieNode));
+    node->character = cJSON_GetStringValue(character)[0];  // Extract the character
+    node->isEndOfWord = cJSON_IsTrue(isEndOfWord);         // Extract the isEndOfWord flag
+    node->left = buildHybridFromJSON(left);                // Recursively build the left child
+    node->middle = buildHybridFromJSON(middle);            // Recursively build the middle child
+    node->right = buildHybridFromJSON(right);              // Recursively build the right child
+
+    return node;
+}
+
+// Wrapper function to read JSON from a file and build the Hybrid Trie
+HybridTrieNode *buildHybridFromFile(const char *filename) {
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        fprintf(stderr, "Error: Could not open file '%s'.\n", filename);
+        return NULL;
+    }
+
+    // Read the entire file into memory
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    rewind(file);
+
+    char *buffer = (char *)malloc(fileSize + 1);
+    if (!buffer) {
+        fclose(file);
+        fprintf(stderr, "Error: Memory allocation failed.\n");
+        return NULL;
+    }
+
+    fread(buffer, 1, fileSize, file);
+    fclose(file);
+    buffer[fileSize] = '\0';
+
+    // Parse the JSON data
+    cJSON *json = cJSON_Parse(buffer);
+    free(buffer);
+
+    if (!json) {
+        fprintf(stderr, "Error: Failed to parse JSON.\n");
+        return NULL;
+    }
+
+    // Build the Hybrid Trie
+    HybridTrieNode *root = buildHybridFromJSON(json);
+
+    // Clean up JSON object
+    cJSON_Delete(json);
+
+    return root;
+}
+
+HybridTrieNode *MergeHybrid(HybridTrieNode *tree1, HybridTrieNode *tree2) {
+    char **wordList = ListeMotsHybrid(tree2);  // Assumes ListeMotsHybrid exists and extracts words alphabetically
+    if (!wordList) {
+        return tree1; 
+    }
+    int wordCount = countWordsHybrid(tree2); // Assumes countWordsHybrid counts words in tree
+    for (int i = 0; i < wordCount; i++) {
+        if (wordList[i]) {
+            insertHybridTrie(tree1, wordList[i]); // Assumes insertHybrid inserts words into a Hybrid Trie
+            free(wordList[i]); // Free the memory for the current word
+        }
+    }
+
+    // Free the list itself after use
+    free(wordList);
+
+    return tree1; // Return the merged tree
+}

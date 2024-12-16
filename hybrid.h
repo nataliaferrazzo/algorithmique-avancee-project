@@ -25,7 +25,8 @@ int PrefixeH(HybridTrieNode *tree, const char *prefixe);
 HybridTrieNode* createHybridTrie(char character);
 HybridTrieNode* insertHybridTrie(HybridTrieNode *root, const char *word);
 HybridTrieNode* SuppressionH(HybridTrieNode *root, const char *word);
-
+HybridTrieNode *MergeHybrid(HybridTrieNode *tree1, HybridTrieNode *tree2);
+HybridTrieNode *buildHybridFromFile(const char *filename);
 
 
 #endif // HYBRID_H
